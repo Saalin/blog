@@ -1,5 +1,5 @@
 <ul>
-    <li>
-        [ 2023-01-01 ] <a href="posts/2023-01-01-hello-world.html">Hello, world</a>
-    </li>
+    <% for(let i=0; i<posts.length; i++) {%>
+        <li>[ <%= posts[i].rawDate %> ] <a href="<%= posts[i].url %>"><%= posts[i].title %></a></li>
+     <% } %>
 </ul>
