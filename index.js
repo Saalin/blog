@@ -137,8 +137,8 @@ var minify = require('html-minifier').minify;
 
   async function prepareBuildDir() {
     await rimraf("build");
-    fs.mkdir("build", { recursive: true }, (err) => { });
-    fs.mkdir("build/posts", { recursive: true }, (err) => { });
+    fs.mkdir("build", { recursive: true }, (err) => { console.log(err); });
+    fs.mkdir("build/posts", { recursive: true }, (err) => { console.log(err); });
   }
 
   await prepareBuildDir();
