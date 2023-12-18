@@ -111,23 +111,8 @@ var minify = require('html-minifier').minify;
       const content = marked.parse(input);
       const outputName = filename.replace(".md", "");
       const title = capitalizeFirstLetter(outputName);
-      const html = ejs.render(template, { content: content, title: title });
+      const html = ejs.render(template, { content: content, title: title, comments: false });
       fs.writeFileSync(`build/${outputName}.html`, minify(html, { collapseWhitespace: true }));
-    }
-  }
-
-  function doesDirectoryExist(directoryPath) {
-    try {
-      // Check if the directory exists
-      return fs.statSync(directoryPath).isDirectory();
-    } catch (error) {
-      // Handle the error if the directory doesn't exist
-      if (error.code === 'ENOENT') {
-        return false;
-      } else {
-        // Handle other errors
-        throw error;
-      }
     }
   }
 
@@ -136,7 +121,7 @@ var minify = require('html-minifier').minify;
 
     for (const post of posts) {
       const content = marked.parse(post.content);
-      const html = ejs.render(template, { content: content, title: post.title });
+      const html = ejs.render(template, { content: content, title: post.title, comments: true });
       fs.writeFileSync(`build${post.url}`, minify(html, { collapseWhitespace: true }));
     }
   }
@@ -145,7 +130,7 @@ var minify = require('html-minifier').minify;
     const indexTemplate = fs.readFileSync("templates/default.ejs", 'utf-8');
     const postsTemplate = fs.readFileSync("templates/home.ejs", 'utf-8');
     const postsListHtml = ejs.render(postsTemplate, { posts: posts });
-    const indexHtml = ejs.render(indexTemplate, { content: postsListHtml, title: 'Home' });
+    const indexHtml = ejs.render(indexTemplate, { content: postsListHtml, title: 'Home', comments: false });
 
     fs.writeFileSync("build/index.html", minify(indexHtml, { collapseWhitespace: true }));
   }
