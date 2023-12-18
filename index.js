@@ -116,13 +116,33 @@ var minify = require('html-minifier').minify;
     }
   }
 
+  function doesDirectoryExist(directoryPath) {
+    try {
+      // Check if the directory exists
+      return fs.statSync(directoryPath).isDirectory();
+    } catch (error) {
+      // Handle the error if the directory doesn't exist
+      if (error.code === 'ENOENT') {
+        return false;
+      } else {
+        // Handle other errors
+        throw error;
+      }
+    }
+  }
+
   function compilePosts() {
     const template = fs.readFileSync("templates/default.ejs", 'utf-8');
 
     for (const post of posts) {
       const content = marked.parse(post.content);
       const html = ejs.render(template, { content: content, title: post.title });
-      fs.writeFileSync(`build${post.url}`, minify(html, { collapseWhitespace: true }));
+      if (doesDirectoryExist("build/posts")) {
+        fs.writeFileSync(`build${post.url}`, minify(html, { collapseWhitespace: true }));
+      } else {
+        throw new Error("Wtf");
+      }
+      
     }
   }
 
