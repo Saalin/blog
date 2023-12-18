@@ -9,10 +9,13 @@ const prism = require('prismjs');
 const loadLanguages = require('prismjs/components/');
 const { rimraf } = require('rimraf');
 var minify = require('html-minifier').minify;
+const { SitemapStream, streamToPromise } = require( 'sitemap' );
+const { Readable } = require( 'stream' );
 
 (async () => {
   const pagesDir = "pages";
   const postsDir = "posts";
+  const links = [];
 
   const renderer = new marked.Renderer()
   const rendererCode = renderer.code;
@@ -95,7 +98,8 @@ var minify = require('html-minifier').minify;
         date: Date.parse(meta.date),
         url: `/posts/${outputName}.html`,
         content: data.body,
-      })
+      });
+      links.push({ url: `/posts/${outputName}.html`,  changefreq: 'daily', priority: 0.9, lastmod: meta.date });
     }
     return result;
   }
@@ -113,6 +117,7 @@ var minify = require('html-minifier').minify;
       const title = capitalizeFirstLetter(outputName);
       const html = ejs.render(template, { content: content, title: title, comments: false });
       fs.writeFileSync(`build/${outputName}.html`, minify(html, { collapseWhitespace: true }));
+      links.push({ url: `/${outputName}.html`,  changefreq: 'daily', priority: 0.5 });
     }
   }
 
@@ -133,6 +138,7 @@ var minify = require('html-minifier').minify;
     const indexHtml = ejs.render(indexTemplate, { content: postsListHtml, title: 'Home', comments: false });
 
     fs.writeFileSync("build/index.html", minify(indexHtml, { collapseWhitespace: true }));
+    links.push({ url: `/index.html`,  changefreq: 'daily', priority: 1 });
   }
 
   async function prepareBuildDir() {
@@ -141,9 +147,17 @@ var minify = require('html-minifier').minify;
     fs.mkdirSync("build/posts", { recursive: true });
   }
 
+  async function createSitemap() {
+    const stream = new SitemapStream( { hostname: 'https://saalin.dev' } )
+    const result = await streamToPromise(Readable.from(links).pipe(stream));
+    const sitemap = result.toString();
+    fs.writeFileSync("build/sitemap.xml", sitemap);
+  }
+
   await prepareBuildDir();
   compileCss();
   compileIndex();
   compilePages();
   compilePosts();
+  await createSitemap();
 })();
