@@ -1,6 +1,7 @@
 ---
 date: "2023-12-18"
 title: "Building own Static Site Generator"
+tags: ['programming', 'nodejs']
 ---
 
 # Building own Static Site Generator

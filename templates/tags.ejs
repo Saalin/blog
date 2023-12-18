@@ -30,17 +30,10 @@
         </header>
 
         <main>
-            <%- content %>
-
             <% if(tags.length > 0){ %>
-                <b>Tags: </b>
-                <% for(let i=0; i <tags.length; i++) {%>
-                    <a href="<%= `/tags/${tags[i]}` %>"><%= tags[i] %></a>&nbsp
+                <% for(const tag of tags) {%>
+                    <a href="<%= `/tags/${tag.name}` %>"><%= tag.name %> (<%= tag.count %>)</a>&nbsp
                 <% } %>
-            <% } %>
-
-            <% if(comments){ %>
-                <script src="https://utteranc.es/client.js" repo="Saalin/blog-comments" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>
             <% } %>
 
         </main>
