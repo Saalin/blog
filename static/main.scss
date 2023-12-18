@@ -71,6 +71,11 @@ h6 {
     color: var(--text-color);
 }
 
+p {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
 p,
 ul,
 ol {
