@@ -12,10 +12,6 @@ const { Readable } = require( 'stream' );
 const parse = require('./src/parser').default;
 
 (async () => {
-  const pagesDir = "pages";
-  const postsDir = "posts";
-  const links = [];
-
   function compileCss() {
     const result = sass.compile("static/main.scss");
     fs.writeFileSync("build/main.css", result.css);
@@ -25,15 +21,11 @@ const parse = require('./src/parser').default;
     fs.copyFileSync("static/favicon.png", "build/favicon.png");
   }
 
-  function capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
-  function getAllPosts() {
-    const filesNames = fs.readdirSync(postsDir);
+  function extract(inputDir, prefix) {
+    const filesNames = fs.readdirSync(inputDir);
     const result = [];
     for(const filename of filesNames) {
-      const input =  fs.readFileSync(`${postsDir}/${filename}`, 'utf-8');
+      const input =  fs.readFileSync(`${inputDir}/${filename}`, 'utf-8');
       const data = fm(input);
       const meta = yaml.load(data.frontmatter);
       const outputName = filename.replace(".md", "");
@@ -41,49 +33,39 @@ const parse = require('./src/parser').default;
         title: meta.title,
         rawDate: meta.date,
         date: Date.parse(meta.date),
-        url: `/posts/${outputName}.html`,
+        url: `${prefix}/${outputName}.html`,
         content: data.body,
       });
-      links.push({ url: `/posts/${outputName}.html`,  changefreq: 'daily', priority: 0.9, lastmod: meta.date });
     }
     return result;
   }
 
-  const posts = getAllPosts();
+  const posts = extract("posts", "/posts");
+  const pages = extract("pages", "");
+  const contentTemplate = fs.readFileSync("templates/default.ejs", 'utf-8');
 
   function compilePages() {
-    const filesNames = fs.readdirSync(pagesDir);
-    const template = fs.readFileSync("templates/default.ejs", 'utf-8');
-
-    for (const filename of filesNames) {
-      const input =  fs.readFileSync(`${pagesDir}/${filename}`, 'utf-8');
-      const content = parse(input);
-      const outputName = filename.replace(".md", "");
-      const title = capitalizeFirstLetter(outputName);
-      const html = ejs.render(template, { content: content, title: title, comments: false });
-      fs.writeFileSync(`build/${outputName}.html`, minify(html, { collapseWhitespace: true }));
-      links.push({ url: `/${outputName}.html`,  changefreq: 'daily', priority: 0.5 });
+    for (const page of pages) {
+      const content = parse(page.content);
+      const html = ejs.render(contentTemplate, { content: content, title: page.title, comments: false });
+      fs.writeFileSync(`build${page.url}`, minify(html, { collapseWhitespace: true }));
     }
   }
 
   function compilePosts() {
-    const template = fs.readFileSync("templates/default.ejs", 'utf-8');
-
     for (const post of posts) {
       const content = parse(post.content);
-      const html = ejs.render(template, { content: content, title: post.title, comments: true });
+      const html = ejs.render(contentTemplate, { content: content, title: post.title, comments: true });
       fs.writeFileSync(`build${post.url}`, minify(html, { collapseWhitespace: true }));
     }
   }
 
-  function compileIndex() {
-    const indexTemplate = fs.readFileSync("templates/default.ejs", 'utf-8');
+  function compileIndex(list) {
     const postsTemplate = fs.readFileSync("templates/home.ejs", 'utf-8');
-    const postsListHtml = ejs.render(postsTemplate, { posts: posts });
-    const indexHtml = ejs.render(indexTemplate, { content: postsListHtml, title: 'Home', comments: false });
+    const postsListHtml = ejs.render(postsTemplate, { posts: list });
+    const indexHtml = ejs.render(contentTemplate, { content: postsListHtml, title: 'Home', comments: false });
 
     fs.writeFileSync("build/index.html", minify(indexHtml, { collapseWhitespace: true }));
-    links.push({ url: `/index.html`,  changefreq: 'daily', priority: 1 });
   }
 
   async function prepareBuildDir() {
@@ -93,6 +75,10 @@ const parse = require('./src/parser').default;
   }
 
   async function createSitemap() {
+    const links = [{ url: `/index.html`, changefreq: 'daily', priority: 1 },
+      ...(posts.map(x => ({ url: x.url, changefreq: 'daily', priority: 0.9  }))),
+      ...(pages.map(x => ({ url: x.url, changefreq: 'daily', priority: 0.8  })))
+    ];
     const stream = new SitemapStream( { hostname: 'https://saalin.dev' } )
     const result = await streamToPromise(Readable.from(links).pipe(stream));
     const sitemap = result.toString();
@@ -101,7 +87,7 @@ const parse = require('./src/parser').default;
 
   await prepareBuildDir();
   compileCss();
-  compileIndex();
+  compileIndex(posts);
   compilePages();
   compilePosts();
   await createSitemap();
