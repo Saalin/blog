@@ -16,10 +16,10 @@ It wouldn't be surprising if, as .NET developer, I took .NET stack for this proj
 * support for Markdown in posts and pages
 * support for LaTeX ([Katex.js](https://katex.org/))
 * syntax highliting ([Prism.js](https://prismjs.com/))
-* favicon, robots.txt
-* sitemap.xml
+* `favicon.png`, `robots.txt`
+* `sitemap.xml`
 * comments (with [utteranc.es](https://utteranc.es/))
 
 ## Plans for future
 
-It's not generic, I won't recommend using it anywhere else. The only things that are missing for my use case is multi-language support (as I want to write some things in Polish) and tags support. Probably it will mean code refactor in the meantime. Also, I probably need to look a bit at SSO related things.
+It's not generic, I won't recommend using it anywhere else. The only things that are missing for my use case is multi-language support (as I want to write some things in Polish) and tags support. Probably it will mean code refactor in the meantime, now it's rather big ball of mud than properly written piece of code (even though with about 160 lines of code it's easy to understand). Also, I probably need to look a bit at SSO related things.
