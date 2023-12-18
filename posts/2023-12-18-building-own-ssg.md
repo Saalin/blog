@@ -5,7 +5,7 @@ title: "Building own Static Site Generator"
 
 # Building own Static Site Generator
 
-Welcome at my very own blog site. There are plenty of decent static site generators available, such as Jekyll or Hugo, but many developers suffers from [not invented here syndrome](https://en.wikipedia.org/wiki/Not_invented_here), so do I. Therefore, I decided to create simple script on my own.
+Welcome at my very own blog site. There are plenty of decent static site generators available, such as Jekyll or Hugo, but many developers suffers from [not invented here syndrome](https://en.wikipedia.org/wiki/Not_invented_here), so do I. Therefore, I decided to create simple script on my own. Sources are avaiable at [GitHub](https://github.com/Saalin/blog).
 
 ## Stack
 

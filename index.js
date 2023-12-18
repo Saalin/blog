@@ -1,75 +1,20 @@
 const fs = require('fs');
-const { marked } = require('marked');
 const sass = require('sass');
 const fm = require('front-matter')
 const ejs = require('ejs');
 const yaml = require('js-yaml');
-const katex = require('katex');
-const prism = require('prismjs');
-const loadLanguages = require('prismjs/components/');
+
 const { rimraf } = require('rimraf');
 var minify = require('html-minifier').minify;
 const { SitemapStream, streamToPromise } = require( 'sitemap' );
 const { Readable } = require( 'stream' );
 
+const parse = require('./src/parser').default;
+
 (async () => {
   const pagesDir = "pages";
   const postsDir = "posts";
   const links = [];
-
-  const renderer = new marked.Renderer()
-  const rendererCode = renderer.code;
-  loadLanguages(['javascript', 'csharp', 'jsx', 'css', 'markup', 'bash', 'json']);
-  renderer.code = function (code, lang, escaped) {
-    if (prism.languages[lang]) {
-      return prism.highlight(code, prism.languages[lang], lang);
-    } else {
-      return rendererCode(code, lang, escaped);
-    }
-  }
-
-  const originParagraph = renderer.paragraph.bind(renderer)
-  renderer.paragraph = (text) => {
-    const blockRegex = /\$\$[^\$]*\$\$/g
-    const inlineRegex = /\$[^\$]*\$/g
-    const blockExprArray = text.match(blockRegex)
-    const inlineExprArray = text.match(inlineRegex)
-    for (const i in blockExprArray) {
-      const expr = blockExprArray[i]
-      const result = renderMathsExpression(expr)
-      text = text.replace(expr, result)
-    }
-    for (const i in inlineExprArray) {
-      const expr = inlineExprArray[i]
-      const result = renderMathsExpression(expr)
-      text = text.replace(expr, result)
-    }
-    return originParagraph(text)
-  }
-
-  function renderMathsExpression(expr) {
-    if (expr[0] === '$' && expr[expr.length - 1] === '$') {
-      let displayStyle = false
-      expr = expr.substr(1, expr.length - 2)
-      if (expr[0] === '$' && expr[expr.length - 1] === '$') {
-        displayStyle = true
-        expr = expr.substr(1, expr.length - 2)
-      }
-      let html = null
-      try {
-        html = katex.renderToString(expr)
-      } catch (e) {
-        console.err(e)
-      }
-      if (displayStyle && html) {
-        html = html.replace(/class="katex"/g, 'class="katex katex-block" style="display: block;"')
-      }
-      return html
-    } else {
-      return null
-    }
-  }
-  marked.setOptions({ renderer: renderer })
 
   function compileCss() {
     const result = sass.compile("static/main.scss");
@@ -112,7 +57,7 @@ const { Readable } = require( 'stream' );
 
     for (const filename of filesNames) {
       const input =  fs.readFileSync(`${pagesDir}/${filename}`, 'utf-8');
-      const content = marked.parse(input);
+      const content = parse(input);
       const outputName = filename.replace(".md", "");
       const title = capitalizeFirstLetter(outputName);
       const html = ejs.render(template, { content: content, title: title, comments: false });
@@ -125,7 +70,7 @@ const { Readable } = require( 'stream' );
     const template = fs.readFileSync("templates/default.ejs", 'utf-8');
 
     for (const post of posts) {
-      const content = marked.parse(post.content);
+      const content = parse(post.content);
       const html = ejs.render(template, { content: content, title: post.title, comments: true });
       fs.writeFileSync(`build${post.url}`, minify(html, { collapseWhitespace: true }));
     }
