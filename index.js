@@ -71,10 +71,10 @@ var minify = require('html-minifier').minify;
   function compileCss() {
     const result = sass.compile("static/main.scss");
     fs.writeFileSync("build/main.css", result.css);
-    fs.copyFile("static/prism.css", "build/prism.css", (err) => { });
-    fs.copyFile("static/prism.js", "build/prism.js", (err) => { });
-    fs.copyFile("static/katex.min.css", "build/katex.min.css", (err) => { });
-    fs.copyFile("static/robots.txt", "build/robots.txt", (err) => { });
+    fs.copyFileSync("static/prism.css", "build/prism.css");
+    fs.copyFileSync("static/katex.min.css", "build/katex.min.css");
+    fs.copyFileSync("static/robots.txt", "build/robots.txt");
+    fs.copyFileSync("static/favicon.png", "build/favicon.png");
   }
 
   function capitalizeFirstLetter(string) {
@@ -137,8 +137,8 @@ var minify = require('html-minifier').minify;
 
   async function prepareBuildDir() {
     await rimraf("build");
-    fs.mkdirSync("build", { recursive: true }, (err) => { console.log(err); });
-    fs.mkdirSync("build/posts", { recursive: true }, (err) => { console.log(err); });
+    fs.mkdirSync("build", { recursive: true });
+    fs.mkdirSync("build/posts", { recursive: true });
   }
 
   await prepareBuildDir();
