@@ -137,12 +137,7 @@ var minify = require('html-minifier').minify;
     for (const post of posts) {
       const content = marked.parse(post.content);
       const html = ejs.render(template, { content: content, title: post.title });
-      if (doesDirectoryExist("build/posts")) {
-        fs.writeFileSync(`build${post.url}`, minify(html, { collapseWhitespace: true }));
-      } else {
-        throw new Error("Wtf");
-      }
-      
+      fs.writeFileSync(`build${post.url}`, minify(html, { collapseWhitespace: true }));
     }
   }
 
@@ -157,8 +152,8 @@ var minify = require('html-minifier').minify;
 
   async function prepareBuildDir() {
     await rimraf("build");
-    fs.mkdir("build", { recursive: true }, (err) => { console.log(err); });
-    fs.mkdir("build/posts", { recursive: true }, (err) => { console.log(err); });
+    fs.mkdirSync("build", { recursive: true }, (err) => { console.log(err); });
+    fs.mkdirSync("build/posts", { recursive: true }, (err) => { console.log(err); });
   }
 
   await prepareBuildDir();
