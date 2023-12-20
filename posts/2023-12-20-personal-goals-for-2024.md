@@ -29,11 +29,12 @@ Key results:
 
 List of topic that interests me grows each year, but it's a part of me and it's not bad that I have broad knowladge on many things (yet not that deep). I don't want to become professional in the areas below, but I want to perform at least a bit better.
 
+Key results:
 - guitar and piano - I like music, but I don't train enough. I would like to learn a few songs upcoming year and learn to read notes more fluently.
 - electronics - more practicing of soldering, I would like to build some guitar effects or simple amp on my own.
 - dart - I would like to be able to win leg with double out in raasonable time.
-- astronomy - I would like to do regular observations of night sky and learn to find multiple constellations.
-- maths, chemistry and physics - I want to revise my current knowledge.
+- astronomy - I would like to do regular observations of night sky and learn to find multiple constellations. 
+- maths, chemistry and physics - I want to revise my current knowledge and able to write simple proofs and calculating derivatives and integrals.
 
 ## Summary
 
