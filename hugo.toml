@@ -1,4 +1,14 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://saalin.dev/'
 languageCode = 'en-us'
 title = 'My New Hugo Site'
 theme = 'ananke'
+
+enableRobotsTXT = true
+enableEmoji = true
+paginate = 10
+enableGitInfo = true
+
+[sitemap]
+  changeFreq = 'daily'
+  disable = false
+  filename = 'sitemap.xml'
