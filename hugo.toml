@@ -1,7 +1,7 @@
 baseURL = 'https://saalin.dev/'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
-theme = 'ananke'
+title = 'Saalin.dev'
+theme = 'hugo-theme-console'
 
 enableRobotsTXT = true
 enableEmoji = true
